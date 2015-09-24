@@ -2,11 +2,32 @@
 ### MIT License                 ###
 ### Copyright 2014              ###
 
+### Default Speed Limits in Kilometers Per Hour ###
+const SPEED_ROADS_URBAN = Dict(
+    1 => 95,    # Motorway
+    2 => 72,    # Trunk
+    3 => 48,    # Primary
+    4 => 32,    # Secondary
+    5 => 22,    # Tertiary
+    6 => 12,    # Residential/Unclassified
+    7 => 8,     # Service
+    8 => 5)     # Living street
+
+const SPEED_ROADS_RURAL = Dict(
+    1 => 110,
+    2 => 90,
+    3 => 80,
+    4 => 72,
+    5 => 55,
+    6 => 40,
+    7 => 15,
+    8 => 15)
+
 ### The following dictionaries are used for grouping ways    ###
 ### into limited, discrete classes for routing and plotting. ###
 
 # Ordered by typical significance
-const ROAD_CLASSES = Compat.@Dict(
+const ROAD_CLASSES = Dict(
     "motorway" => 1,
     "trunk" => 2,
     "primary" => 3,
@@ -28,7 +49,7 @@ const ROAD_CLASSES = Compat.@Dict(
 # Level 2: Sidewalks
 # Level 3: Pedestrians typically allowed but unspecified
 # Level 4: Agricultural or horse paths, etc.
-const PED_CLASSES = Compat.@Dict(
+const PED_CLASSES = Dict(
     "cycleway" => 1,
     "pedestrian" => 1,
     "living_street" => 1,
@@ -53,7 +74,7 @@ const PED_CLASSES = Compat.@Dict(
 # Level 2: Separated bike lanes (tracks)
 # Level 3: Bike lanes
 # Level 4: Bikes typically allowed but not specified
-const CYCLE_CLASSES = Compat.@Dict(
+const CYCLE_CLASSES = Dict(
     "cycleway" => 1,
     "cycleway:track" => 2,
     "cycleway:opposite_track" => 2,
@@ -74,7 +95,7 @@ const CYCLE_CLASSES = Compat.@Dict(
     "service" => 4,
     "unclassified" => 4)
 
-const FEATURE_CLASSES = Compat.@Dict(
+const FEATURE_CLASSES = Dict(
     "aerialway" => 1,
     "aeroway" => 2,
     "amenity" => 3,
@@ -107,7 +128,7 @@ const FEATURE_CLASSES = Compat.@Dict(
 # Class 3: Civic/Amenity
 # Class 4: Other
 # Class 5: Unclassified
-const BUILDING_CLASSES = Compat.@Dict(
+const BUILDING_CLASSES = Dict(
     "accomodation" => 1,
     "apartments" => 1,
     "bungalow" => 1,
@@ -181,3 +202,42 @@ const BUILDING_CLASSES = Compat.@Dict(
 
     "yes" => 5,
     "Yes" => 5)
+
+### Standard map display "layers." ###
+# const LAYER_STANDARD = Dict(
+#     1 => Style(0x7BB6EF, 4), # Soft blue
+#     2 => Style(0x66C266, 3), # Soft green
+#     3 => Style(0xE68080, 3), # Soft red
+#     4 => Style(0xFF9900, 3), # Soft orange
+#     5 => Style(0xDADA47, 3), # Dark yellow
+#     6 => Style(0x999999, 2), # Dark gray
+#     7 => Style(0xE0E0E0, 2), # Light gray
+#     8 => Style(0x999999, 1)) # Dark gray
+
+# const LAYER_CYCLE = Dict(
+#     1 => Style(0x006600, 3), # Green
+#     2 => Style(0x5C85FF, 3), # Blue
+#     3 => Style(0x5C85FF, 2), # Blue
+#     4 => Style(0x999999, 2)) # Dark gray
+
+# const LAYER_PED = Dict(
+#     1 => Style(0x999999, 3), # Dark gray
+#     2 => Style(0x999999, 3), # Dark gray
+#     3 => Style(0x999999, 2), # Dark gray
+#     4 => Style(0xE0E0E0, 2)) # Light gray
+
+# const LAYER_FEATURES = Dict(
+#     1 => Style(0x9966FF, 1.5, "."), # Lavender
+#     2 => Style(0xFF0000, 1.5, "."), # Red
+#     3 => Style(0x000000, 1.5, "."), # Black
+#     4 => Style(0xFF66FF, 1.5, "."), # Pink
+#     5 => Style(0x996633, 1.5, "."), # Brown
+#     6 => Style(0xFF9900, 2.0, "."), # Orange
+#     7 => Style(0xCC00CC, 1.5, ".")) # Brown
+
+# const LAYER_BUILDINGS = Dict(
+#     1 => Style(0xE1E1EB, 1, "-"), # Lighter gray
+#     2 => Style(0xB8DBFF, 1, "-"), # Light blue
+#     3 => Style(0xB5B5CE, 1, "-"), # Light gray
+#     4 => Style(0xFFFF99, 1, "-"), # Pale yellow
+#     5 => Style(0x006600, 1, "-")) # Green
