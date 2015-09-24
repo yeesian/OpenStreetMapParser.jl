@@ -48,11 +48,11 @@ OpenStreetMap represents physical features on the ground (e.g., roads or buildin
 
 5. We will not be providing the following conveniences, but suggest packages that might help (in parentheses):
 
-- plotting/viewing of the map elements (Compose/Winston) # OpenStreetMapPlotter.jl
-- routing on the road network (LightGraphs/Graphs) # OpenStreetMapRouter.jl
-- map projections/transformations between different coordinate systems (Geodesy/OGR)
-- filtering/selection of data (DataFrames)
-- geometric operations (JuliaGeometry/LibGEOS)
+  - plotting/viewing of the map elements (Compose/Winston) # OpenStreetMapPlotter.jl
+  - routing on the road network (LightGraphs/Graphs) # OpenStreetMapRouter.jl
+  - map projections/transformations between different coordinate systems (Geodesy/OGR)
+  - filtering/selection of data (DataFrames)
+  - geometric operations (JuliaGeometry/LibGEOS)
 
 6. We will, on the other hand, support Pull-Requests that updates the package to be in line with official/well-supported frameworks of OSM data.
 
