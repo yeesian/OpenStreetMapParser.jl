@@ -4,7 +4,7 @@ module OpenStreetMapParser
     import LightGraphs
     import Proj4
 
-    export parseNodes, parseWays, parseRelations, osm2dataframe, createNetwork
+    export parseOSM, osm2dataframe, createNetwork
 
     include("osm_classification.jl")
     include("osm_elements.jl")
