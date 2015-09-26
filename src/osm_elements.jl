@@ -1,15 +1,8 @@
-type Node
-    element::Symbol # :None, :Node
-    tags::Dict{UTF8String,UTF8String}
-    id::Int # initially #undef
-    latlon::Tuple{Float64,Float64} # initially #undef
-
-    Node() = new(:None,Dict())
-end
+abstract OSMElement
 
 # Nodes
 # +-----+-------------------+---------------+
-# | id  | latlon            | tags...       |
+# | id  | lonlat            | tags...       |
 # +-----+-------------------+---------------+
 # | Int | (Float64,Float64) | UTF8String... |
 # | .   | .                 | .             |
@@ -17,23 +10,20 @@ end
 # | .   | .                 | .             |
 # +-----+-------------------+---------------+
 
-type Nodes
-    ids::Vector{Int}
-    latlon::Dict{Int,Tuple{Float64,Float64}}
-    tags::Dict{UTF8String,Dict{Int,UTF8String}}
-
-    Nodes() = new(Int[], Dict{Int,Tuple{Float64,Float64}}(),
-                  Dict{UTF8String,Dict{Int,UTF8String}}())
-end
-
-type Way
-    element::Symbol # :None, :Way
-    nodes::Vector{Int}
+type Node <: OSMElement
+    id::Int
+    lonlat::Tuple{Float64,Float64}
     tags::Dict{UTF8String,UTF8String}
-    id::Int # initially #undef
-
-    Way() = new(:None,Int[],Dict())
+    Node(id::Int, lonlat::Tuple{Float64,Float64}) = new(id, lonlat)
 end
+
+function tags(n::Node) # lazily create tags
+    isdefined(n, :tags) || (n.tags = Dict{UTF8String,UTF8String}())
+    n.tags
+end
+
+# Node(id::Int, lonlat::Tuple{Float64,Float64}) =
+#     Node(id, lonlat, Dict{UTF8String,UTF8String}())
 
 # Ways
 # +-----+-------------------+---------------+
@@ -45,25 +35,15 @@ end
 # | .   | .                 | .             |
 # +-----+-------------------+---------------+
 
-type Ways
-    ids::Vector{Int}
-    nodes::Dict{Int,Vector{Int}}
-    tags::Dict{UTF8String,Dict{Int,UTF8String}}
-    
-    Ways() = new(Int[], Dict{Int,Vector{Int}}(),
-                 Dict{UTF8String,Dict{Int,UTF8String}}())
-end
-
-type Relation
-    element::Symbol # :None, :Relation
-    members::Vector{Dict{UTF8String,UTF8String}}
+type Way <: OSMElement
+    id::Int
+    nodes::Vector{Int}
     tags::Dict{UTF8String,UTF8String}
-    id::Int # initially #undef
-
-    Relation() = new(:None,
-                     Dict{UTF8String,UTF8String}[],
-                     Dict{UTF8String,UTF8String}())
+    Way(id::Int) = new(id, Vector{Int}(), Dict{UTF8String,UTF8String}())
 end
+tags(w::Way) = w.tags
+
+# Way(id::Int) = Way(id, Vector{Int}(), Dict{UTF8String,UTF8String}())
 
 # Relations
 # +-----+-----------------------+---------------+
@@ -75,11 +55,14 @@ end
 # | .   | .                     | .             |
 # +-----+-----------------------+---------------+
 
-type Relations
-    ids::Vector{Int}
-    members::Dict{Int,Vector{Dict{UTF8String,UTF8String}}}
-    tags::Dict{UTF8String,Dict{Int,UTF8String}}
-
-    Relations() = new(Int[], Dict{Int,Vector{Dict{UTF8String,UTF8String}}}(),
-                      Dict{UTF8String,Dict{Int,UTF8String}}())
+type Relation <: OSMElement
+    id::Int
+    members::Vector{Dict{UTF8String,UTF8String}}
+    tags::Dict{UTF8String,UTF8String}
+    Relation(id::Int) = new(id, Vector{Dict{UTF8String,UTF8String}}(),
+                            Dict{UTF8String,UTF8String}())
 end
+tags(r::Relation) = r.tags
+
+# Relation(id::Int) = Relation(id, Vector{Dict{UTF8String,UTF8String}}(),
+#                              Dict{UTF8String,UTF8String}())
