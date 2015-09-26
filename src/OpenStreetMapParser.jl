@@ -2,9 +2,8 @@ module OpenStreetMapParser
     import LibExpat # XPCallbacks, XPStreamHandler, parsefile)
     import DataFrames # DataFrame, NA
     import LightGraphs
-    import Proj4
 
-    export parseOSM, osm2dataframe, createNetwork
+    export parseOSM, osm2dataframe, osm2digraph
 
     include("osm_classification.jl")
     include("osm_elements.jl")
