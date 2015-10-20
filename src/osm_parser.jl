@@ -13,8 +13,12 @@ type OSMData
     nodes::Vector{Node}
     ways::Vector{Way}
     relations::Vector{Relation}
+    node_tags::Set{UTF8String}
+    way_tags::Set{UTF8String}
+    relation_tags::Set{UTF8String}
 end
-OSMData() = OSMData(Vector{Node}(),Vector{Way}(),Vector{Relation}())
+OSMData() = OSMData(Vector{Node}(), Vector{Way}(), Vector{Relation}(),
+                    Set{UTF8String}(), Set{UTF8String}(), Set{UTF8String}())
 
 type DataHandle
     element::Symbol
@@ -27,9 +31,9 @@ type DataHandle
 end
 
 function parseElement(handler::LibExpat.XPStreamHandler,
-                      name::String,
-                      attr::Dict{String,String})
-    data = handler.data
+                      name::AbstractString,
+                      attr::Dict{AbstractString,AbstractString})
+    data = handler.data::DataHandle
     if name == "node"
         data.element = :Node
         data.node = Node(parse(Int, attr["id"]),
@@ -42,9 +46,16 @@ function parseElement(handler::LibExpat.XPStreamHandler,
         data.relation = Relation(parse(Int, attr["id"]))
     elseif name == "tag"
         k = attr["k"]; v = attr["v"]
-        (data.element == :Node) && (data_tags = tags(data.node))
-        (data.element == :Way) && (data_tags = tags(data.way))
-        (data.element == :Relation) && (data_tags = tags(data.relation))
+        if data.element == :Node
+            data_tags = tags(data.node)
+            push!(data.osm.node_tags, k)
+        elseif data.element == :Way
+            data_tags = tags(data.way)
+            push!(data.osm.way_tags, k)
+        elseif data.element == :Relation
+            data_tags = tags(data.relation)
+            push!(data.osm.relation_tags, k)
+        end
         data_tags[k] = v
     elseif name == "nd"
         push!(data.way.nodes, parse(Int, attr["ref"]))
@@ -53,7 +64,7 @@ function parseElement(handler::LibExpat.XPStreamHandler,
     end
 end
 
-function collectElement(handler::LibExpat.XPStreamHandler, name::String)
+function collectElement(handler::LibExpat.XPStreamHandler, name::AbstractString)
     if name == "node"
         push!(handler.data.osm.nodes, handler.data.node)
         handler.data.element = :None
@@ -66,7 +77,7 @@ function collectElement(handler::LibExpat.XPStreamHandler, name::String)
     end
 end
 
-function parseOSM(filename::String; args...)
+function parseOSM(filename::AbstractString; args...)
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseElement
     callbacks.end_element = collectElement
@@ -76,8 +87,8 @@ function parseOSM(filename::String; args...)
 end
 
 function parseNode(handler::LibExpat.XPStreamHandler,
-                   name::String,
-                   attr::Dict{String,String})
+                   name::AbstractString,
+                   attr::Dict{AbstractString,AbstractString})
     data = handler.data
     if name == "node"
         data.element = :Node
@@ -89,14 +100,14 @@ function parseNode(handler::LibExpat.XPStreamHandler,
     end
 end
 
-function collectNode(handler::LibExpat.XPStreamHandler, name::String)
+function collectNode(handler::LibExpat.XPStreamHandler, name::AbstractString)
     if name == "node"
         handler.data.element = :None
         push!(handler.data.nodes, handler.data.curr)
     end
 end
 
-function parseNodes(filename::String; args...)
+function parseNodes(filename::AbstractString; args...)
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseNode
     callbacks.end_element = collectNode
@@ -127,8 +138,8 @@ type WayHandle
 end
 
 function parseWay(handler::LibExpat.XPStreamHandler,
-                  name::String,
-                  attr::Dict{String,String})
+                  name::AbstractString,
+                  attr::Dict{AbstractString,AbstractString})
     if name == "way"
         handler.data.element = :Way
         handler.data.curr = Way(parse(Int, attr["id"]),
@@ -143,14 +154,14 @@ function parseWay(handler::LibExpat.XPStreamHandler,
     end
 end
 
-function collectWay(handler::LibExpat.XPStreamHandler, name::String)
+function collectWay(handler::LibExpat.XPStreamHandler, name::AbstractString)
     if name == "way"
         push!(handler.data.ways, handler.data.curr)
         handler.data.element = :None
     end
 end
 
-function parseWays(filename::String; args...)
+function parseWays(filename::AbstractString; args...)
     wayhandle = WayHandle(:None, Vector{Way}())
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseWay
@@ -177,8 +188,8 @@ type RelationHandle
 end
 
 function parseRelation(handler::LibExpat.XPStreamHandler,
-                       name::String,
-                       attr::Dict{String,String})
+                       name::AbstractString,
+                       attr::Dict{AbstractString,AbstractString})
     if name == "relation"
         handler.data.element = :Relation
         handler.data.curr = Relation(parse(Int, attr["id"]),
@@ -193,14 +204,14 @@ function parseRelation(handler::LibExpat.XPStreamHandler,
     end
 end
 
-function collectRelation(handler::LibExpat.XPStreamHandler, name::String)
+function collectRelation(handler::LibExpat.XPStreamHandler, name::AbstractString)
     if name == "relation"
         push!(handler.data.relations, handler.data.curr)
         handler.data.element = :None
     end
 end
 
-function parseRelations(filename::String; args...)
+function parseRelations(filename::AbstractString; args...)
     relationhandle = RelationHandle(:None, Vector{Relation}())
     callbacks = LibExpat.XPCallbacks()
     callbacks.start_element = parseRelation
