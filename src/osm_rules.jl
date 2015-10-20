@@ -8,11 +8,8 @@ services(w::Way) = (get(w.tags,"highway", "") == "services")
 reverse(w::Way) = (get(w.tags,"oneway", "") == "-1")
 
 function haslanes(w::Way)
-    if haskey(w.tags, "lanes")
-        v = w.tags["lanes"]
-        return length(v)==1 && '1' <= v[1] <= '9'
-    end
-    return false
+    v = get(w.tags, "lanes", "")
+    length(v)==1 && '1' <= v[1] <= '9'
 end
 
 function oneway(w::Way)
@@ -36,12 +33,7 @@ end
 lanes(w::Way) = parse(Int, w.tags["lanes"])
 
 # feature class
-function roadway(w::Way)
-    if highway(w) && haskey(ROAD_CLASSES, w.tags["highway"])
-        return ROAD_CLASSES[w.tags["highway"]]
-    end
-    return 0
-end
+roadway(w::Way) = highway(w) * get(ROAD_CLASSES, w.tags["highway"], 0)
 
 function walkway(way::Way)
     sidewalk = get(way.tags, "sidewalk", "")
