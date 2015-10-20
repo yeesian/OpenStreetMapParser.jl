@@ -3,7 +3,7 @@ module OpenStreetMapParser
     import DataFrames # DataFrame, NA
     import LightGraphs
 
-    export parseOSM, osm2dataframe, osm2digraph
+    export parseOSM, osm2dataframe, osmnetwork
 
     include("osm_classification.jl")
     include("osm_elements.jl")
